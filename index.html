@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/babel">
+
+    // Your  code will go here
+
+    function TaskManager(){
+
+        const [task , setTask] = React.useState("")
+
+        function handleTask(){
+           let value ={title : task , status : false}
+          
+           axios.post("http://localhost:5000/todos" , value)
+           .then(() => console.log("Task id added"))
+           .catch(()=> console.log("Failed to add"))
+           console.log("Task is added")
+        }
+
+
+        return(
+            <>
+            <div>
+            <input type="text" placeholder="Enter Task" 
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            />    
+            <button onClick={handleTask}>Add Task</button>
+            </div>
+            
+            </>
+        )
+
+
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<TaskManager/>)
+  </script>
+</html>
