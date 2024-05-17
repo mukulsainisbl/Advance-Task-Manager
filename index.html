@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template</title>
   </head>
+  <style>
+
+    .box{
+      display: flex;
+      justify-content: space-around;
+      border: 2px solid black;
+      margin:15px;
+      width:auto;
+      }
+  </style>
   <body>
     <div id="root"></div>
   </body>
@@ -13,39 +23,69 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script type="text/babel">
-
     // Your  code will go here
 
-    function TaskManager(){
+    function TaskManager() {
+      const [task, setTask] = React.useState("");
+      const [data, setData] = React.useState([]);
 
-        const [task , setTask] = React.useState("")
+      function getData() {
+        axios
+          .get(`http://localhost:3000/todos`)
+          .then((res) => setData(res.data))
+          .catch((err) => console.log(err));
+      }
 
-        function handleTask(){
-           let value ={title : task , status : false}
-          
-           axios.post("http://localhost:5000/todos" , value)
-           .then(() => console.log("Task id added"))
-           .catch(()=> console.log("Failed to add"))
-           console.log("Task is added")
-        }
+      React.useEffect(() => {
+        getData();
+      }, []);
 
+      function handleTask() {
+        let value = { title: task, status: false };
 
-        return(
-            <>
-            <div>
-            <input type="text" placeholder="Enter Task" 
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-            />    
+        axios
+          .post("http://localhost:3000/todos", value)
+          .then(() => console.log("Task id added"))
+          .catch(() => console.log("Failed to add"));
+        console.log("Task is added");
+      }
+      function handleDelete(ele){
+        axios.delete(`http://localhost:3000/todos/${ele.id}`)
+  .then(response => {
+    console.log(response)
+  })
+  .catch(error => {
+    console.error(error);
+  });
+      }
+
+      return (
+        <>
+          <div>
+            <input
+              type="text"
+              placeholder="Enter Task"
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+            />
             <button onClick={handleTask}>Add Task</button>
-            </div>
-            
-            </>
-        )
+          </div>
 
-
+          <div>
+            {data.map((ele) => (
+              <div  className="box" key={ele.id}>
+                <h3>{ele.title}</h3>
+                <h3>{ele.status.toString()}</h3>
+                <button onClick={()=> handleDelete(ele)}>Delete</button>
+              </div>
+            ))}
+          </div>
+        </>
+      );
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<TaskManager/>)
+    ReactDOM.createRoot(document.getElementById("root")).render(
+      <TaskManager />
+    );
   </script>
 </html>
